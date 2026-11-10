@@ -30,3 +30,4 @@ class ApiEndpoints {
   static const String settlements = '/v1/settlements';
   static const String admins = '/v1/admins';
 }
+

@@ -18,8 +18,10 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
     FirebaseAuth? firebaseAuth,
     FirebaseFirestore? firestore,
-  })  : _firebaseAuth = firebaseAuth,
-        _firestore = firestore;
+  }) {
+    _firebaseAuth = firebaseAuth;
+    _firestore = firestore;
+  }
 
   FirebaseAuth get _auth {
     try {

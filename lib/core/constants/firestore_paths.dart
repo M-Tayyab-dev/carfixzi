@@ -26,3 +26,4 @@ class FirestorePaths {
   static const String workshopFormVersions = 'workshopFormVersions';
   static const String workshopFormConfigs = 'workshopFormConfigs';
 }
+

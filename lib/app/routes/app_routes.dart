@@ -54,3 +54,4 @@ abstract class AppRoutes {
   static const superAdminSettings = '/super/settings';
   static const superAdminAiAssistant = '/super/ai-assistant';
 }
+

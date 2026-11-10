@@ -40,3 +40,4 @@ class SuggestedAction {
     required this.route,
   });
 }
+

@@ -291,3 +291,4 @@ class _VerificationRow extends StatelessWidget {
     );
   }
 }
+

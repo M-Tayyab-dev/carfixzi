@@ -33,3 +33,4 @@ enum UserRole {
   bool get isSuperAdmin => this == UserRole.super_admin;
   bool get isStaffOrAdmin => this == UserRole.admin || this == UserRole.super_admin;
 }
+

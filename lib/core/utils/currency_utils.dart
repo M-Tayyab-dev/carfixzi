@@ -24,3 +24,4 @@ class CurrencyUtils {
     return raw;
   }
 }
+

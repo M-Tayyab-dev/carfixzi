@@ -48,3 +48,4 @@ class CarfixziCard extends StatelessWidget {
     return cardContent;
   }
 }
+

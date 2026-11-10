@@ -27,3 +27,4 @@ abstract class AuthRepository {
   Future<void> signOut();
   Future<String?> getIdToken({bool forceRefresh = false});
 }
+

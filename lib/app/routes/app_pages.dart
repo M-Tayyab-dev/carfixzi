@@ -17,10 +17,14 @@ import '../../features/customer/presentation/views/workshop_locator_view.dart';
 
 // Partner Views
 import '../../features/partner/presentation/views/partner_dashboard_view.dart';
+import '../../features/partner/presentation/views/partner_onboarding_view.dart';
+import '../../features/partner/presentation/views/partner_review_status_view.dart';
 
 // Admin & Super Admin Views
 import '../../features/admin/presentation/views/admin_dashboard_view.dart';
+import '../../features/admin/presentation/views/admin_form_builder_view.dart';
 import '../../features/super_admin/presentation/views/super_admin_dashboard_view.dart';
+import '../../features/super_admin/presentation/views/super_admin_form_governance_view.dart';
 
 // Shared AI Assistant
 import '../../features/ai_assistant/presentation/views/ai_assistant_view.dart';
@@ -75,13 +79,18 @@ class AppPages {
 
     // Partner Protected Routes (Android Mobile)
     GetPage(
+      name: AppRoutes.partnerOnboarding,
+      page: () => const PartnerOnboardingView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.workshop])],
+    ),
+    GetPage(
       name: AppRoutes.partnerDashboard,
       page: () => const PartnerDashboardView(),
       middlewares: [AuthMiddleware(allowedRoles: [UserRole.workshop])],
     ),
     GetPage(
       name: AppRoutes.partnerReviewStatus,
-      page: () => const VerifyEmailView(),
+      page: () => const PartnerReviewStatusView(),
       middlewares: [AuthMiddleware(allowedRoles: [UserRole.workshop])],
     ),
     GetPage(
@@ -94,6 +103,13 @@ class AppPages {
     GetPage(
       name: AppRoutes.adminDashboard,
       page: () => const AdminDashboardView(),
+      middlewares: [
+        AuthMiddleware(allowedRoles: [UserRole.admin, UserRole.super_admin]),
+      ],
+    ),
+    GetPage(
+      name: AppRoutes.adminFormBuilder,
+      page: () => const AdminFormBuilderView(),
       middlewares: [
         AuthMiddleware(allowedRoles: [UserRole.admin, UserRole.super_admin]),
       ],
@@ -113,9 +129,15 @@ class AppPages {
       middlewares: [AuthMiddleware(allowedRoles: [UserRole.super_admin])],
     ),
     GetPage(
+      name: AppRoutes.superAdminFormGovernance,
+      page: () => const SuperAdminFormGovernanceView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.super_admin])],
+    ),
+    GetPage(
       name: AppRoutes.superAdminAiAssistant,
       page: () => const AiAssistantView(),
       middlewares: [AuthMiddleware(allowedRoles: [UserRole.super_admin])],
     ),
   ];
 }
+

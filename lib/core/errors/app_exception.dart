@@ -38,3 +38,4 @@ class InventoryException extends AppException {
 class BookingException extends AppException {
   BookingException(super.message, {super.code});
 }
+

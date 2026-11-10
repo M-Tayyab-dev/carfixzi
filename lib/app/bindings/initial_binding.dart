@@ -18,3 +18,4 @@ class InitialBinding extends Bindings {
     );
   }
 }
+

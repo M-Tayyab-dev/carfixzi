@@ -26,3 +26,4 @@ class AppConstants {
   static const int defaultServiceCommissionBps = 1000; // 10.00%
   static const int defaultPartsCommissionBps = 500;    // 5.00%
 }
+
