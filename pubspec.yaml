@@ -39,6 +39,7 @@ dependencies:
   # Network & Utilities
   http: ^1.4.0
   intl: ^0.19.0
+  crypto: ^3.0.3
 
   # UI & Design System
   google_fonts: ^6.2.1

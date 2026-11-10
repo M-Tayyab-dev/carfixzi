@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:carfixzi/theme/app_colors.dart';
 import 'package:carfixzi/theme/app_typography.dart';
 import 'package:carfixzi/shared/widgets/carfixzi_card.dart';
@@ -7,6 +8,7 @@ import 'package:carfixzi/shared/widgets/carfixzi_button.dart';
 import 'package:carfixzi/shared/widgets/carfixzi_text_field.dart';
 import 'package:carfixzi/shared/widgets/status_badge.dart';
 import 'package:carfixzi/app/routes/app_routes.dart';
+import 'package:carfixzi/core/services/media_upload_service.dart';
 import 'package:carfixzi/features/partner/presentation/controllers/form_builder_controller.dart';
 import 'package:carfixzi/features/partner/domain/entities/form_field_config.dart';
 
@@ -29,7 +31,9 @@ class PartnerOnboardingView extends StatefulWidget {
 class _PartnerOnboardingViewState extends State<PartnerOnboardingView> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> _controllers = {};
-  final Map<String, String> _uploadedMedia = {}; // fieldId -> mock/signed upload reference
+  final Map<String, String> _uploadedMedia = {}; // fieldId -> Cloudinary secure_url
+  final Set<String> _uploadingFields = {};
+  final MediaUploadService _mediaService = MediaUploadService();
   late FormBuilderController _formCtrl;
   bool _isSubmitting = false;
 
@@ -56,21 +60,105 @@ class _PartnerOnboardingViewState extends State<PartnerOnboardingView> {
     super.dispose();
   }
 
-  void _handleMockMediaUpload(String fieldId, String label) {
-    // In demo environment, generates a valid synthetic signed media reference
-    final syntheticPublicId = 'carfixzi_demo_${fieldId}_${DateTime.now().millisecondsSinceEpoch}';
-    setState(() {
-      _uploadedMedia[fieldId] = syntheticPublicId;
-    });
+  Future<void> _handleMediaUpload(String fieldId, String label, FormFieldType type) async {
+    if (type == FormFieldType.taxReturn) {
+      // PDF or Document picker
+      try {
+        setState(() => _uploadingFields.add(fieldId));
+        final result = await _mediaService.pickAndUploadDocument();
+        if (result != null) {
+          setState(() {
+            _uploadedMedia[fieldId] = result.secureUrl;
+          });
+          Get.snackbar(
+            'Document Uploaded',
+            '$label uploaded to verified Cloudinary storage.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.successContainer,
+            colorText: AppColors.success,
+          );
+        }
+      } catch (e) {
+        Get.snackbar(
+          'Upload Failed',
+          'Failed to upload $label: $e',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.errorContainer,
+          colorText: AppColors.error,
+        );
+      } finally {
+        setState(() => _uploadingFields.remove(fieldId));
+      }
+    } else {
+      // Photo picker modal (Camera vs Gallery)
+      Get.bottomSheet(
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Upload $label',
+                style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded, color: AppColors.primaryContainer),
+                title: const Text('Take Photo with Camera'),
+                onTap: () async {
+                  Get.back();
+                  await _pickImageFromSource(fieldId, label, ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded, color: AppColors.primaryContainer),
+                title: const Text('Choose from Gallery'),
+                onTap: () async {
+                  Get.back();
+                  await _pickImageFromSource(fieldId, label, ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
 
-    Get.snackbar(
-      'Document Attached',
-      'Synthetic $label attached for verification preview.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green.shade100,
-      colorText: Colors.green.shade900,
-      margin: const EdgeInsets.all(16),
-    );
+  Future<void> _pickImageFromSource(String fieldId, String label, ImageSource source) async {
+    try {
+      setState(() => _uploadingFields.add(fieldId));
+      final result = await _mediaService.pickAndUploadImage(
+        source: source,
+        folder: 'carfixzi/onboarding/$fieldId',
+      );
+      if (result != null) {
+        setState(() {
+          _uploadedMedia[fieldId] = result.secureUrl;
+        });
+        Get.snackbar(
+          'Photo Uploaded',
+          '$label uploaded to Cloudinary.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.successContainer,
+          colorText: AppColors.success,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Upload Failed',
+        'Could not upload $label: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.errorContainer,
+        colorText: AppColors.error,
+      );
+    } finally {
+      setState(() => _uploadingFields.remove(fieldId));
+    }
   }
 
   void _handleSubmit() {
@@ -178,6 +266,8 @@ class _PartnerOnboardingViewState extends State<PartnerOnboardingView> {
     // Media Upload Fields (Storefront Photo, CNIC Front, CNIC Back, Tax Return)
     if (field.type.isProtectedDocument || field.type == FormFieldType.businessPhoto) {
       final isAttached = _uploadedMedia.containsKey(field.fieldId);
+      final isUploading = _uploadingFields.contains(field.fieldId);
+      final mediaUrl = _uploadedMedia[field.fieldId] ?? '';
 
       return CarfixziCard(
         child: Column(
@@ -209,21 +299,61 @@ class _PartnerOnboardingViewState extends State<PartnerOnboardingView> {
               Text(field.helpText!, style: AppTypography.bodySmall),
             ],
             const SizedBox(height: 12),
-            if (isAttached)
-              Row(
-                children: [
-                  const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Attached: ${_uploadedMedia[field.fieldId]}',
-                      style: AppTypography.bodySmall.copyWith(color: AppColors.success),
+            if (isUploading)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primaryContainer),
                     ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Uploading to Cloudinary (mbecykon)...',
+                      style: AppTypography.bodySmall.copyWith(color: AppColors.primaryContainer, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              )
+            else if (isAttached)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Cloudinary URL: $mediaUrl',
+                          style: AppTypography.bodySmall.copyWith(color: AppColors.success),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => _handleMediaUpload(field.fieldId, field.label, field.type),
+                        child: const Text('Replace'),
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () => _handleMockMediaUpload(field.fieldId, field.label),
-                    child: const Text('Replace'),
-                  ),
+                  if (field.type != FormFieldType.taxReturn && mediaUrl.startsWith('http')) ...[
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.network(
+                        mediaUrl,
+                        height: 90,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                      ),
+                    ),
+                  ],
                 ],
               )
             else
@@ -232,9 +362,9 @@ class _PartnerOnboardingViewState extends State<PartnerOnboardingView> {
                   minimumSize: const Size(double.infinity, 44),
                   side: const BorderSide(color: AppColors.primaryContainer),
                 ),
-                icon: const Icon(Icons.upload_file_rounded, size: 18),
-                label: Text('Upload Document / Photo'),
-                onPressed: () => _handleMockMediaUpload(field.fieldId, field.label),
+                icon: const Icon(Icons.cloud_upload_outlined, size: 18),
+                label: Text('Upload ${field.type == FormFieldType.taxReturn ? "PDF Document" : "Photo"} to Cloudinary'),
+                onPressed: () => _handleMediaUpload(field.fieldId, field.label, field.type),
               ),
           ],
         ),
