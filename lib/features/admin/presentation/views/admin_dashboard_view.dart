@@ -70,7 +70,7 @@ class AdminDashboardView extends StatelessWidget {
                       subtitle: 'CNIC & Tax docs uploaded',
                       color: AppColors.error,
                       icon: Icons.assignment_late_outlined,
-                      onTap: () {},
+                      onTap: () => Get.toNamed(AppRoutes.adminVerifications),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -154,18 +154,7 @@ class AdminDashboardView extends StatelessWidget {
                 submittedAt: 'Today, 10:45 AM',
                 partnerType: 'Physical Workshop',
                 status: 'pending_review',
-                onReview: () {
-                  Get.defaultDialog(
-                    title: 'Protected Review',
-                    middleText:
-                        'Accessing protected Cloudinary assets: Business photo, CNIC Front/Back, and Current Tax Return.',
-                    textConfirm: 'Approve Workshop',
-                    textCancel: 'Request Changes',
-                    confirmTextColor: AppColors.darkSlate,
-                    buttonColor: AppColors.accentGold,
-                    onConfirm: () => Get.back(),
-                  );
-                },
+                onReview: () => Get.toNamed(AppRoutes.adminVerifications),
               ),
               const SizedBox(height: 10),
               _VerificationRow(
@@ -174,7 +163,7 @@ class AdminDashboardView extends StatelessWidget {
                 submittedAt: 'Yesterday, 04:12 PM',
                 partnerType: 'Mobile Detailing Partner',
                 status: 'pending_review',
-                onReview: () {},
+                onReview: () => Get.toNamed(AppRoutes.adminVerifications),
               ),
             ],
           ),
