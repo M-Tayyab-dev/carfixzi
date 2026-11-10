@@ -19,17 +19,23 @@ import '../../features/customer/presentation/views/car_wash_booking_view.dart';
 import '../../features/customer/presentation/views/mobile_mechanic_view.dart';
 import '../../features/customer/presentation/views/service_tracking_view.dart';
 import '../../features/customer/presentation/views/payment_checkout_view.dart';
+import '../../features/customer/presentation/views/parts_marketplace_view.dart';
+import '../../features/customer/presentation/views/cart_view.dart';
 
 // Partner Views
 import '../../features/partner/presentation/views/partner_dashboard_view.dart';
 import '../../features/partner/presentation/views/partner_onboarding_view.dart';
 import '../../features/partner/presentation/views/partner_review_status_view.dart';
+import '../../features/partner/presentation/views/partner_inventory_view.dart';
+import '../../features/partner/presentation/views/partner_billing_view.dart';
 
 // Admin & Super Admin Views
 import '../../features/admin/presentation/views/admin_dashboard_view.dart';
 import '../../features/admin/presentation/views/admin_form_builder_view.dart';
 import '../../features/super_admin/presentation/views/super_admin_dashboard_view.dart';
 import '../../features/super_admin/presentation/views/super_admin_form_governance_view.dart';
+import '../../features/super_admin/presentation/views/super_admin_commission_view.dart';
+import '../../features/super_admin/presentation/views/super_admin_settlements_view.dart';
 
 // Shared AI Assistant
 import '../../features/ai_assistant/presentation/views/ai_assistant_view.dart';
@@ -102,6 +108,16 @@ class AppPages {
       middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
     ),
     GetPage(
+      name: AppRoutes.partsMarketplace,
+      page: () => const PartsMarketplaceView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
+    ),
+    GetPage(
+      name: AppRoutes.cart,
+      page: () => const CartView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
+    ),
+    GetPage(
       name: AppRoutes.customerAiAssistant,
       page: () => const AiAssistantView(),
       middlewares: [AuthMiddleware()],
@@ -121,6 +137,16 @@ class AppPages {
     GetPage(
       name: AppRoutes.partnerReviewStatus,
       page: () => const PartnerReviewStatusView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.workshop])],
+    ),
+    GetPage(
+      name: AppRoutes.partnerInventory,
+      page: () => const PartnerInventoryView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.workshop])],
+    ),
+    GetPage(
+      name: AppRoutes.partnerBilling,
+      page: () => const PartnerBillingView(),
       middlewares: [AuthMiddleware(allowedRoles: [UserRole.workshop])],
     ),
     GetPage(
@@ -161,6 +187,16 @@ class AppPages {
     GetPage(
       name: AppRoutes.superAdminFormGovernance,
       page: () => const SuperAdminFormGovernanceView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.super_admin])],
+    ),
+    GetPage(
+      name: AppRoutes.superAdminCommission,
+      page: () => const SuperAdminCommissionView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.super_admin])],
+    ),
+    GetPage(
+      name: AppRoutes.superAdminSettlements,
+      page: () => const SuperAdminSettlementsView(),
       middlewares: [AuthMiddleware(allowedRoles: [UserRole.super_admin])],
     ),
     GetPage(

@@ -79,3 +79,4 @@ class BiometricService {
     await _secureStorage.delete(key: _keySessionToken);
   }
 }
+
