@@ -14,6 +14,11 @@ import '../../features/auth/presentation/views/forgot_password_view.dart';
 // Customer Views
 import '../../features/customer/presentation/views/customer_home_view.dart';
 import '../../features/customer/presentation/views/workshop_locator_view.dart';
+import '../../features/customer/presentation/views/service_booking_view.dart';
+import '../../features/customer/presentation/views/car_wash_booking_view.dart';
+import '../../features/customer/presentation/views/mobile_mechanic_view.dart';
+import '../../features/customer/presentation/views/service_tracking_view.dart';
+import '../../features/customer/presentation/views/payment_checkout_view.dart';
 
 // Partner Views
 import '../../features/partner/presentation/views/partner_dashboard_view.dart';
@@ -69,6 +74,31 @@ class AppPages {
     GetPage(
       name: AppRoutes.workshopLocator,
       page: () => const WorkshopLocatorView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
+    ),
+    GetPage(
+      name: AppRoutes.serviceBooking,
+      page: () => const ServiceBookingView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
+    ),
+    GetPage(
+      name: AppRoutes.carWashBooking,
+      page: () => const CarWashBookingView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
+    ),
+    GetPage(
+      name: AppRoutes.mobileMechanic,
+      page: () => const MobileMechanicView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
+    ),
+    GetPage(
+      name: AppRoutes.serviceTracking,
+      page: () => const ServiceTrackingView(),
+      middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
+    ),
+    GetPage(
+      name: AppRoutes.paymentCheckout,
+      page: () => const PaymentCheckoutView(),
       middlewares: [AuthMiddleware(allowedRoles: [UserRole.customer])],
     ),
     GetPage(
