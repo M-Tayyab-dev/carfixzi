@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "309638201507",
+    "project_id": "carfixzt",
+    "storage_bucket": "carfixzt.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:309638201507:android:385bc4f3e89561bac1bf16",
+        "android_client_info": {
+          "package_name": "com.example.carfixzi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgaum-O88FdN0hezgH-Dx4i6k7U9_8fVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

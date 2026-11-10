@@ -1,0 +1,59 @@
+name: carfixzi
+description: "CARFIXZI - Verified Automotive Services & Workshop Marketplace SaaS"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State Management, Routing & Dependency Injection
+  get: ^4.7.2
+
+  # Firebase
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.6.0
+  cloud_firestore: ^5.6.7
+  firebase_messaging: ^15.2.7
+
+  # Local Security & Biometrics (Android)
+  flutter_secure_storage: ^9.2.4
+  local_auth: ^2.3.0
+
+  # Mapping & Geolocation (OpenStreetMap)
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  geolocator: ^13.0.2
+
+  # Media & File Handling
+  image_picker: ^1.1.2
+  file_picker: ^8.1.7
+  cached_network_image: ^3.4.1
+
+  # Network & Utilities
+  http: ^1.4.0
+  intl: ^0.19.0
+
+  # UI & Design System
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.17
+  shimmer: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Asset definitions for icons and placeholder images
+  assets:
+    - assets/images/
+    - assets/icons/
