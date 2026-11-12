@@ -6,6 +6,7 @@ import '../../../../core/utils/currency_utils.dart';
 import '../../../../shared/widgets/carfixzi_card.dart';
 import '../../../../shared/widgets/carfixzi_button.dart';
 import '../../../../shared/widgets/carfixzi_text_field.dart';
+import '../../../../shared/widgets/osm_location_picker.dart';
 import '../../../../app/routes/app_routes.dart';
 
 /// D13: Mobile Car & Bike Wash Booking View

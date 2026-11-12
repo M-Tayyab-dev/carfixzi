@@ -9,6 +9,7 @@ import 'package:carfixzi/shared/widgets/carfixzi_text_field.dart';
 import 'package:carfixzi/shared/widgets/status_badge.dart';
 import 'package:carfixzi/app/routes/app_routes.dart';
 import 'package:carfixzi/core/services/media_upload_service.dart';
+import 'package:carfixzi/shared/widgets/osm_location_picker.dart';
 import 'package:carfixzi/features/partner/presentation/controllers/form_builder_controller.dart';
 import 'package:carfixzi/features/partner/domain/entities/form_field_config.dart';
 
@@ -371,7 +372,77 @@ class _PartnerOnboardingViewState extends State<PartnerOnboardingView> {
       );
     }
 
-    // Standard Text / Phone / Multiline / Map inputs
+    // Interactive OpenStreetMap Location Pin for Shop Address
+    if (field.type == FormFieldType.addressMap) {
+      final controller = _controllers.putIfAbsent(field.fieldId, () => TextEditingController());
+
+      return CarfixziCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.map_rounded, size: 20, color: AppColors.primaryContainer),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    field.label,
+                    style: AppTypography.labelMedium.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                if (field.required)
+                  Text('*Required', style: AppTypography.labelSmall.copyWith(color: AppColors.error)),
+              ],
+            ),
+            if (field.helpText != null) ...[
+              const SizedBox(height: 4),
+              Text(field.helpText!, style: AppTypography.bodySmall),
+            ],
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: 'Enter street or pin on OpenStreetMap',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              ),
+              validator: field.required
+                  ? (v) => v == null || v.trim().isEmpty ? '${field.label} is required' : null
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.surfaceContainerHigh,
+                foregroundColor: AppColors.primaryContainer,
+                elevation: 0,
+                minimumSize: const Size(double.infinity, 40),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              icon: const Icon(Icons.pin_drop_rounded, size: 18),
+              label: const Text('Pin Workshop on OpenStreetMap (Sahiwal)'),
+              onPressed: () async {
+                final result = await OsmLocationPicker.show(
+                  context,
+                  title: 'Pin Workshop Location',
+                );
+                if (result != null) {
+                  controller.text = result.address;
+                  Get.snackbar(
+                    'Location Selected',
+                    'Pinned at: ${result.address}',
+                    snackPosition: SnackPosition.BOTTOM,
+                    duration: const Duration(seconds: 2),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Standard Text / Phone / Multiline inputs
     final controller = _controllers.putIfAbsent(field.fieldId, () => TextEditingController());
 
     return CarfixziTextField(

@@ -5,6 +5,7 @@ import '../../../../theme/app_typography.dart';
 import '../../../../shared/widgets/carfixzi_card.dart';
 import '../../../../shared/widgets/carfixzi_button.dart';
 import '../../../../shared/widgets/carfixzi_text_field.dart';
+import '../../../../shared/widgets/osm_location_picker.dart';
 import '../../../../app/routes/app_routes.dart';
 
 /// NEW-04: Mobile Mechanic Minor Issue Request Screen
@@ -140,7 +141,28 @@ class _MobileMechanicViewState extends State<MobileMechanicView> {
                 controller: _addressCtrl,
                 prefixIcon: const Icon(Icons.pin_drop_outlined, color: AppColors.outline),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 6),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primaryContainer,
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  ),
+                  icon: const Icon(Icons.map_rounded, size: 16),
+                  label: const Text('Pick Exact Pin on OpenStreetMap'),
+                  onPressed: () async {
+                    final result = await OsmLocationPicker.show(
+                      context,
+                      title: 'Pick Roadside Breakdown Location',
+                    );
+                    if (result != null) {
+                      setState(() => _addressCtrl.text = result.address);
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
 
               // Problem Description
               CarfixziTextField(
