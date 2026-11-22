@@ -247,4 +247,3 @@ flutter analyze
 
 ---
 
-*Made with ❤️ for the Pakistani Automotive Community.*
