@@ -1,127 +1,199 @@
-# CARFIXZI — Verified Automotive Services & Workshop Marketplace SaaS
+# 🚗 CARFIXZI — Verified Automotive Services & Workshop Marketplace
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)](https://dart.dev)
 [![FastAPI](https://img.shields.io/badge/FastAPI-1.0-009688?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)](https://python.org)
-[![Cloudinary](https://img.shields.io/badge/Storage-Cloudinary-3448C5?logo=cloudinary)](https://cloudinary.com)
-[![GroqCloud](https://img.shields.io/badge/AI-GroqCloud_LLaMA-F05A28)](https://console.groq.com)
+[![GroqCloud](https://img.shields.io/badge/AI-GroqCloud_LPU-F05A28)](https://console.groq.com)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**CARFIXZI** is a production-grade, multi-tenant automotive SaaS marketplace engineered for verified workshop discovery, doorstep car wash, on-demand mobile mechanic dispatch, spare parts sales, and audited cash-on-service commission settlements.
+**CARFIXZI** is an intuitive, multi-role automotive service marketplace designed to make vehicle maintenance, roadside assistance, and workshop management simple, transparent, and reliable. 
 
 Initial pilot rollout: **Sahiwal District, Punjab, Pakistan**.
 
 ---
 
+## 📑 Table of Contents
+1. [User-Centric Design Principles (UI/UX)](#-user-centric-design-principles-uiux)
+2. [How AI Works in CARFIXZI](#-how-ai-works-in-carfixzi)
+3. [User Roles & Experience](#-user-roles--experience)
+4. [Key Features & User Journey](#-key-features--user-journey)
+5. [System Architecture](#-system-architecture)
+6. [Folder Structure](#-folder-structure)
+7. [Quick Start Guide](#-quick-start-guide)
+8. [Testing & Quality Assurance](#-testing--quality-assurance)
+
+---
+
+## 🎨 User-Centric Design Principles (UI/UX)
+
+CARFIXZI is crafted following human-centered UI/UX standards to ensure ease of use for customers, mechanics, and administrators alike:
+
+- **Intuitive Plain-Language Terminology**:
+  - Replaced technical jargon with familiar everyday words:
+    - *"Log In"* instead of *"Ignite Session"*
+    - *"Admin Panel"* instead of *"Root Console"*
+    - *"My Vehicles"* instead of *"My Garage"*
+    - *"Add Part"* instead of *"Add SKU"*
+    - *"Save Photo"* instead of *"RenderRepaintBoundary Capture"*
+- **Touch-Friendly & Accessible**:
+  - Minimum touch target size of 48×48 dp for buttons and navigation items.
+  - Generous spacing, readable typography, and accessible color contrast ratios (WCAG AA compliant).
+- **Persistent Bottom Navigation**:
+  - Both Customer and Workshop interfaces feature persistent, bottom navigation bars utilizing `IndexedStack` to preserve user scroll position and form inputs across tabs.
+- **Adaptive Responsive Layouts**:
+  - Uses `LayoutBuilder` and flexible cards that gracefully adapt between Android smartphones, tablets, and desktop/web browser widths without visual clipping or overflow.
+- **Instant Photo Receipts**:
+  - Branded receipts featuring the CARFIXZI logo, itemized bill, and official verification seal can be saved directly to the user's phone gallery with a single tap of the **"Save Photo"** button.
+
+---
+
+## 🤖 How AI Works in CARFIXZI
+
+The **CARFIXZI Intelligent Assistant** provides instant, human-like automotive support, vehicle diagnostics, price estimates, and direct service booking right inside the chat.
+
+```mermaid
+flowchart TD
+    User["User Query (e.g. 'My brakes are making noise')"] --> AI_View["AI Assistant View"]
+    AI_View --> Controller["AiChatController"]
+    
+    subgraph AI_Engine ["Intelligent Multi-Tier Pipeline"]
+        Controller -->|1. Direct Request| Groq["GroqCloud LPU Inference Engine<br/>(Ultra-low latency LLM)"]
+        Controller -->|2. Local Proxy Fallback| FastAPI["FastAPI Local Python Service"]
+        Controller -->|3. Offline Fallback| OfflineKB["Grounded Pilot Knowledge Base"]
+    end
+    
+    Groq --> Context["Grounded Context Engine<br/>• Sahiwal Certified Workshops<br/>• Standard PKR Pricing<br/>• Troubleshooting Guides"]
+    Context --> Formatter["Response & Intent Recognition"]
+    
+    Formatter --> Response["Natural Language Advice with PKR Quotes"]
+    Formatter --> ActionPills["Dynamic Action Chips<br/>• 📅 Book Service<br/>• 📍 Find Workshops<br/>• 🧼 Doorstep Wash<br/>• 🚨 Emergency Mechanic"]
+    
+    Response --> AI_View
+    ActionPills -->|One-Tap Tap| BookingScreen["Direct In-App Booking Screen"]
+```
+
+### 1. Ultra-Fast GroqCloud Engine
+The assistant is powered by ultra-fast inference on **GroqCloud LPUs (Language Processing Units)**, delivering response times under 1 second. This ensures customers and mechanics get real-time answers without lag.
+
+### 2. Grounded Local Automotive Knowledge Base
+Unlike generic chatbots that hallucinate information, CARFIXZI's AI is grounded in real, verified pilot data for Sahiwal, Pakistan:
+- **Verified Workshop Directory**: Recommends certified workshops such as *Apex GT Motorwerks*, *Royal Auto Detailing Hub*, and *PakWheels Express Bay*.
+- **Standardized PKR Pricing**: Gives realistic pricing ranges (e.g., Brake pad replacement: Rs 2,400 – Rs 5,500; Doorstep car wash: from Rs 800; Battery jumpstart: Rs 1,200).
+- **Practical Troubleshooting**: Diagnoses symptoms like brake squeal, engine overheating, battery drain, or steering vibration and directs the user to the correct fix.
+
+### 3. In-Chat Direct Booking Flow
+Users can book services directly from the conversation:
+- **Automatic Intent Recognition**: When a user mentions a repair, car wash, or emergency, the AI automatically generates clickable **action chips** (e.g., `[📅 Confirm & Book Service]`, `[🧼 Book Doorstep Wash]`, `[🚨 Call Emergency Mechanic]`).
+- **Quick-Action Shortcut Bar**: A horizontal ribbon at the top of the chat allows one-tap access to instant service booking, roadside assistance, mobile car wash, and spare parts without having to type.
+
+### 4. Robust 3-Tier Fallback Strategy
+To guarantee uninterrupted service in all conditions:
+1. **Direct Cloud Inference**: Queries GroqCloud directly for immediate responses.
+2. **Backend Proxy Gateway**: Routes via the secure local FastAPI Python service if cloud endpoints require token validation.
+3. **Offline Knowledge Base**: Provides verified answers and booking shortcuts even when completely offline or during network disruptions.
+
+---
+
+## 👥 User Roles & Experience
+
+| Role | Interface Type | Everyday Name | Purpose & Features |
+| :--- | :--- | :--- | :--- |
+| **Customer / Car Owner** | Mobile App (Android) | **Customer Portal** | Discover workshops on map, book maintenance, order doorstep car wash, call roadside emergency mechanic, buy genuine parts, and track repair milestones. |
+| **Workshop Partner** | Mobile App (Android) | **Partner Hub** | Manage active service bays, assign technicians, track parts inventory with low-stock alerts, accept customer bookings, and view monthly earnings. |
+| **Regional Admin** | Web / Desktop | **Regional Console** | Verify workshop licenses, inspect CNIC and Tax documentation, and customize workshop registration forms. |
+| **Super Admin** | Web / Desktop | **Admin Panel** | Configure platform commission policies, record verified settlements, oversee administrative staff, and monitor platform metrics. |
+
+---
+
+## 🚀 Key Features & User Journey
+
+### 1. Customer Experience
+- **Interactive OpenStreetMap Locator**: Browse certified workshops in Sahiwal with custom pins, reviews, operating hours, and bay availability.
+- **Service Milestone Tracking**: Real-time progress bar from vehicle drop-off, diagnostic scan, parts replacement, to final inspection and handover.
+- **Transparent Cash-on-Service**: Pay in Pakistani Rupees directly after inspecting the vehicle.
+- **Digital Photo Receipts**: Tap to download and save an official, branded receipt with the CARFIXZI logo directly to the phone's gallery.
+
+### 2. Workshop Partner Operations
+- **5-Tab Navigation**: Clean bottom navigation between **Dashboard**, **Bookings**, **Inventory**, **Billing**, and **Profile**.
+- **Live Bay Monitoring**: Track Bay 01 to Bay 04 with assigned mechanics, vehicle registration numbers, and live progress indicators.
+- **Inventory Management**: Search spare parts, adjust stock with `+` and `−` steppers, and add new parts with one tap.
+- **Clickable Settlement Receipts**: Tap any monthly settlement to inspect the 90/10 commission breakdown and save a branded photo receipt.
+
+### 3. Super Admin Governance
+- **One-Tap Card Navigation**: Every card in the Admin Panel is fully clickable to jump straight into governance tools.
+- **Flexible Commission Setting**: Adjust service, parts, wash, and mobile mechanic commission either **by entering an exact digit** (e.g., `10.0%`) or **by sliding the range bar**.
+- **Audited Settlements**: Record physical partner payouts and cash commissions with full audit trails.
+
+---
+
 ## 🏛️ System Architecture
 
-CARFIXZI follows **Clean MVVM Architecture** with **GetX** for reactive state management, typed routing, and Dependency Injection:
+CARFIXZI follows **Clean MVVM Architecture** combined with **GetX** for dependency injection and state management:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        PRESENTATION LAYER                              │
-│   Controllers (GetxController)  ◄───►  Views & Custom Design System    │
-│   - AuthController                     - Customer Views (D01 - D17)    │
-│   - FormBuilderController              - Partner Operations (D18 - D22)│
-│   - CartController                     - Admin Dashboards (D23 - D25)  │
-│   - AiChatController                   - Super Admin Root (D24)        │
+│   GetX Controllers  ◄──────────────────►  Responsive UI & Design System│
+│   • AuthController                        • Customer Views             │
+│   • AiChatController                      • Workshop Partner Hub       │
+│   • CartController                        • Regional Admin Console     │
+│   • FormBuilderController                 • Super Admin Panel          │
 └────────────────────────────────────┬───────────────────────────────────┘
                                      │
 ┌────────────────────────────────────▼───────────────────────────────────┐
 │                           DOMAIN LAYER                                 │
-│   Entities, Enums & Repository Contracts (Pure Dart, Zero UI coupling) │
-│   - ServiceItem, PartItem, FormFieldConfig, WorkshopFormVersion        │
-│   - UserRole, BookingStatus, OrderStatus, PaymentStatus                │
-│   - AuthRepository, BiometricService, CurrencyUtils (PKR Paisa)        │
+│   Entities, Enums & Use Cases (Pure Dart, Zero UI Dependency)          │
+│   • ServiceItem, PartItem, FormFieldConfig, SettlementRecord           │
+│   • UserRole, BookingStatus, OrderStatus, PaymentStatus                │
+│   • CurrencyUtils (Strict Integer PKR Paisa: 1 PKR = 100 Paisa)        │
 └────────────────────────────────────┬───────────────────────────────────┘
                                      │
 ┌────────────────────────────────────▼───────────────────────────────────┐
 │                            DATA LAYER                                  │
-│   Data Sources & External Gateways                                     │
-│   - Firebase Auth (Link-based email verification, zero SMS costs)      │
-│   - OpenStreetMap (flutter_map + latlong2, zero Google billing)        │
-│   - Cloudinary Media Storage (Signed uploads for CNIC & Tax PDFs)      │
-│   - Python FastAPI Backend (Grounded Groq AI proxy & Form Governance)  │
+│   Data Providers, Repositories & External Services                     │
+│   • Firebase Authentication (Secure session management)                │
+│   • OpenStreetMap / flutter_map (Free, open-source geospatial data)    │
+│   • Cloudinary Media Service (High-speed document & image CDN)         │
+│   • GroqCloud API (Ultra-low latency AI inference)                     │
+│   • Python FastAPI Service (Secure enterprise proxy & form governance) │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 👥 Multi-Role Taxonomy
-
-| Role | Target Platform | Primary Capabilities |
-| :--- | :--- | :--- |
-| **Customer** | Android Mobile | Discover verified workshops via OpenStreetMap, book repairs, doorstep car wash, request roadside mobile mechanic, buy spare parts, track milestones, and cash checkout. |
-| **Workshop Partner** | Android Mobile | Dynamic onboarding with CNIC & Tax Return upload, live bay monitoring, technician assignment, spare parts inventory alerts, and monthly commission billing ledger. |
-| **Regional Admin** | Responsive Web / Desktop | Review partner verification queue, verify CNIC/tax documents, dynamic workshop registration form builder (create/edit/reorder fields), moderate price proposals. |
-| **Super Admin** | Responsive Web / Desktop | Root platform governance, basis point commission policy adjustments (1000 bps services, 500 bps parts), audited manual cash settlement recording, admin provisioning, and form field soft-retirement. |
-
----
-
-## 🚀 Key Functional Capabilities
-
-1. **Zero-Cost Security & Authentication**:
-   - Link-based Firebase email verification (Zero SMS gateway / phone verification costs).
-   - Strict 12+ character password policy enforced with real-time entropy scoring.
-   - Local biometric session unlock (Fingerprint / Face ID via `local_auth`).
-2. **OpenStreetMap Integration**:
-   - Live interactive map using `flutter_map` and `latlong2` with custom map markers for verified workshops in Sahiwal.
-3. **Cash-on-Service & Demo Simulated Checkout**:
-   - Dual-mode checkout explicitly separating physical cash handover from demo simulated transactions.
-   - All amounts calculated in integer PKR Paisa (`1 PKR = 100 Paisa`) with zero floating-point rounding errors.
-4. **Dynamic Workshop Form Builder**:
-   - Admin schema editor to add, edit, and reorder onboarding fields.
-   - Policy-locked legal fields (Storefront photo, CNIC Front/Back, Tax Return) cannot be made optional or deleted by Admins.
-   - Super Admin-only field soft-retirement with required justification audit reasons.
-5. **Cloudinary Document & Photo Storage**:
-   - Camera & Gallery image capture for workshop storefronts and CNIC verification.
-   - PDF document file picker for FBR Tax Return / NTN certificates.
-   - Direct signed Cloudinary uploads returning secure HTTPS URLs.
-6. **Grounded GroqCloud AI Assistant**:
-   - Powered by Qwen 3.8 / LLaMA on GroqCloud, proxied through a trusted local FastAPI backend.
-   - Responses grounded strictly in verified pilot knowledge base (workshops, pricing, and policies).
-
----
-
-## 📂 Project Structure
+## 📂 Folder Structure
 
 ```
-d:\fyp\carfixzi\
-├── lib\
-│   ├── app\
-│   │   ├── bindings\            # Dependency Injection (InitialBinding)
-│   │   ├── middleware\          # Role-based route guards (AuthMiddleware)
-│   │   └── routes\              # Typed routing (AppRoutes, AppPages)
-│   ├── core\
-│   │   ├── constants\           # AppConstants, FirestorePaths, ApiEndpoints
-│   │   ├── enums\               # UserRole, BookingStatus, PaymentStatus, etc.
-│   │   ├── security\            # BiometricService (local_auth + secure_storage)
-│   │   ├── services\            # MediaUploadService (Cloudinary integration)
-│   │   └── utils\               # CurrencyUtils (integer PKR Paisa), Validators
-│   ├── features\
-│   │   ├── admin\               # Form Builder & Partner Document Verification
-│   │   ├── ai_assistant\        # Grounded GroqCloud AI Chat
-│   │   ├── auth\                # Splash, Onboarding, Login, Register, Verify Email
-│   │   ├── customer\            # Home, Map Locator, Bookings, Wash, Mechanic, Cart
-│   │   ├── partner\             # Dashboard, Dynamic Onboarding, Inventory, Billing
-│   │   └── super_admin\         # Commission Policies, Settlements, Staff Provisioning
-│   ├── shared\widgets\          # CarfixziButton, CarfixziCard, StatusBadge, etc.
-│   └── theme\                   # AppColors, AppTypography, AppTheme
-├── backend\                     # Python FastAPI Trusted Backend Service
-│   ├── app\
-│   │   ├── api\                 # AI chat, Dynamic Form, Bookings, Media, Settlements
-│   │   ├── models\              # Pydantic data schemas
-│   │   ├── services\            # Cloudinary & GroqCloud integration
-│   │   ├── config.py            # Environment configuration
-│   │   └── main.py              # FastAPI app with CORS & health checks
-│   ├── requirements.txt         # Python dependencies
-│   ├── .env.example             # Environment template
-│   └── Dockerfile               # Production container definition
-├── docs\                        # Full Architectural Analysis & Specifications
-├── test\
-│   ├── unit\                    # Validators, Currency, Form Builder, Cart, Commission tests
-│   └── widget_test.dart         # Smoke test
+carfixzi/
+├── lib/
+│   ├── app/
+│   │   ├── bindings/             # Initial GetX dependency injection
+│   │   ├── middleware/           # Role-based route guards
+│   │   └── routes/               # AppRoutes & AppPages
+│   ├── core/
+│   │   ├── constants/            # AppConstants, ApiEndpoints, AppSecrets
+│   │   ├── enums/                # UserRole, BookingStatus, PaymentStatus
+│   │   ├── security/             # Biometric authentication
+│   │   └── utils/                # CurrencyUtils, Validators
+│   ├── features/
+│   │   ├── admin/                # Regional Admin views & form builder
+│   │   ├── ai_assistant/         # Groq AI chat controller & view
+│   │   ├── auth/                 # Splash, login, registration, email verify
+│   │   ├── customer/             # Home, map locator, bookings, parts cart
+│   │   ├── partner/              # Workshop dashboard, inventory, billing
+│   │   └── super_admin/          # Commission policies, settlements, staff
+│   ├── shared/widgets/           # Branded buttons, cards, receipt dialog
+│   └── theme/                    # AppColors, AppTypography, AppTheme
+├── backend/                      # Python FastAPI trusted service
+│   ├── app/
+│   │   ├── api/                  # AI proxy, form builder, settlements
+│   │   ├── models/               # Pydantic schemas
+│   │   └── main.py               # FastAPI entry point
+│   └── requirements.txt
+├── assets/
+│   ├── images/                   # App logo and graphics
+│   └── icons/                    # Vector icons
 └── pubspec.yaml
 ```
 
@@ -130,60 +202,49 @@ d:\fyp\carfixzi\
 ## 🛠️ Quick Start Guide
 
 ### 1. Prerequisites
-- **Flutter SDK**: `>=3.13.4`
-- **Dart SDK**: `>=3.13.4`
-- **Python**: `>=3.10`
+- **Flutter SDK**: `>= 3.13.4`
+- **Dart SDK**: `>= 3.13.4`
+- **Python**: `>= 3.10`
 
-### 2. Run the Python FastAPI Backend
+### 2. Setting Up the Mobile / Web Client
+```bash
+# 1. Fetch Flutter packages
+flutter pub get
+
+# 2. Run on Android device or emulator
+flutter run -d android
+
+# 3. Run on Chrome for Admin web consoles
+flutter run -d chrome
+```
+
+### 3. Setting Up the FastAPI Backend (Optional Proxy)
 ```bash
 cd backend
 
-# Create & activate virtual environment
+# Create virtual environment
 python -m venv venv
-.\venv\Scripts\Activate.ps1    # On Windows
-source venv/bin/activate       # On Linux/macOS
+.\venv\Scripts\Activate.ps1       # Windows
+source venv/bin/activate          # macOS/Linux
 
-# Install dependencies
+# Install dependencies and start server
 pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env
-
-# Run FastAPI server
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-- Interactive API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
-- Health Check: [http://localhost:8000/health](http://localhost:8000/health)
-
-### 3. Run the Flutter Client
-```bash
-# Get dependencies
-flutter pub get
-
-# Run Android Handset (Customer / Partner)
-flutter run -d android
-
-# Run Web Dashboard (Admin / Super Admin)
-flutter run -d chrome
 ```
 
 ---
 
-## 🧪 Test Suite Execution
+## 🧪 Testing & Quality Assurance
 
-Run the complete test suite:
+Run the comprehensive test suite to verify business logic and calculations:
 ```bash
+# Run unit & widget tests
 flutter test
-```
-**Results: 38 / 38 unit & widget tests passed (100% success rate)**
-- Password policy & entropy tests
-- PKR Paisa currency and basis points commission calculations
-- Dynamic form builder baseline locks & Super Admin retirement
-- Cart stepper, stock ceilings & total calculation
-- App smoke test
 
-Static analysis:
-```bash
+# Run code analysis
 flutter analyze
-# Output: No issues found!
 ```
+
+---
+
+*Made with ❤️ for the Pakistani Automotive Community.*
