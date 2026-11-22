@@ -20,32 +20,29 @@ class CarfixziCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardContent = Container(
-      padding: padding ?? const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color ?? AppColors.surfaceContainerLowest,
+    final effectiveBorderSide = border != null
+        ? border!.top
+        : const BorderSide(
+            color: Color.fromRGBO(45, 49, 66, 0.08),
+            width: 1,
+          );
+
+    return Material(
+      color: color ?? AppColors.surfaceContainerLowest,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        border: border ??
-            Border.all(
-              color: const Color.fromRGBO(45, 49, 66, 0.08),
-              width: 1,
-            ),
+        side: effectiveBorderSide,
       ),
-      child: child,
-    );
-
-    if (onTap != null) {
-      return Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
-          child: cardContent,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: padding ?? const EdgeInsets.all(16),
+          child: child,
         ),
-      );
-    }
-
-    return cardContent;
+      ),
+    );
   }
 }
 

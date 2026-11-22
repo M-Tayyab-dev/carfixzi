@@ -181,22 +181,28 @@ class _PartsMarketplaceViewState extends State<PartsMarketplaceView> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    CurrencyUtils.formatPaisa(part.pricePaisa),
-                                    style: AppTypography.headlineSmall.copyWith(
-                                      color: AppColors.primaryContainer,
-                                      fontWeight: FontWeight.w800,
+                                  Flexible(
+                                    child: Text(
+                                      CurrencyUtils.formatPaisa(part.pricePaisa),
+                                      style: AppTypography.headlineSmall.copyWith(
+                                        color: AppColors.primaryContainer,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 16,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
+                                  const SizedBox(width: 8),
                                   ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.accentGold,
                                       foregroundColor: AppColors.darkSlate,
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                      minimumSize: const Size(0, 36),
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                      minimumSize: const Size(0, 34),
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     icon: const Icon(Icons.add_shopping_cart_rounded, size: 16),
-                                    label: const Text('Add to Cart'),
+                                    label: const Text('Add', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                                     onPressed: () {
                                       _cartCtrl.addToCart(part);
                                       Get.snackbar(

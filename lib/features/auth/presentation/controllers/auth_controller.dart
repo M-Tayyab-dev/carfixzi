@@ -210,24 +210,28 @@ class AuthController extends GetxController {
       return;
     }
 
-    switch (user.role) {
-      case UserRole.customer:
-        Get.offAllNamed(AppRoutes.customerHome);
-        break;
-      case UserRole.workshop:
-        if (user.partnerStatus?.name == 'approved') {
-          Get.offAllNamed(AppRoutes.partnerDashboard);
-        } else {
-          Get.offAllNamed(AppRoutes.partnerReviewStatus);
-        }
-        break;
-      case UserRole.admin:
-        Get.offAllNamed(AppRoutes.adminDashboard);
-        break;
-      case UserRole.super_admin:
-        Get.offAllNamed(AppRoutes.superAdminDashboard);
-        break;
-    }
+    // Use WidgetsBinding to ensure navigation happens after the current
+    // frame completes, avoiding layout race conditions with Scaffold/FAB.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      switch (user.role) {
+        case UserRole.customer:
+          Get.offAllNamed(AppRoutes.customerHome);
+          break;
+        case UserRole.workshop:
+          if (user.partnerStatus?.name == 'approved') {
+            Get.offAllNamed(AppRoutes.partnerDashboard);
+          } else {
+            Get.offAllNamed(AppRoutes.partnerReviewStatus);
+          }
+          break;
+        case UserRole.admin:
+          Get.offAllNamed(AppRoutes.adminDashboard);
+          break;
+        case UserRole.super_admin:
+          Get.offAllNamed(AppRoutes.superAdminDashboard);
+          break;
+      }
+    });
   }
 }
 

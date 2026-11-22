@@ -53,7 +53,7 @@ class _VehicleRegistrationViewState extends State<VehicleRegistrationView> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
-        title: Text('My Garage', style: AppTypography.headlineSmall),
+        title: Text('My Vehicles', style: AppTypography.headlineSmall),
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -87,7 +87,7 @@ class _VehicleRegistrationViewState extends State<VehicleRegistrationView> {
                       color: Colors.white.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.garage_rounded, color: AppColors.accentGold, size: 30),
+                    child: const Icon(Icons.directions_car_rounded, color: AppColors.accentGold, size: 30),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -254,7 +254,7 @@ class _VehicleRegistrationViewState extends State<VehicleRegistrationView> {
           Get.back();
           Get.snackbar(
             'Vehicle Registered',
-            '$make $model ($reg) added to your garage.',
+            '$make $model ($reg) added to your registered vehicles.',
             snackPosition: SnackPosition.BOTTOM,
           );
         },

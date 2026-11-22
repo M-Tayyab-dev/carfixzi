@@ -106,32 +106,39 @@ class _ServiceTrackingViewState extends State<ServiceTrackingView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            const CircleAvatar(
-                              radius: 16,
-                              backgroundColor: AppColors.surfaceContainerHigh,
-                              child: Icon(Icons.person_rounded, size: 20, color: AppColors.primary),
-                            ),
-                            const SizedBox(width: 8),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Ustad Rashid',
-                                  style: AppTypography.labelMedium.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              const CircleAvatar(
+                                radius: 16,
+                                backgroundColor: AppColors.surfaceContainerHigh,
+                                child: Icon(Icons.person_rounded, size: 20, color: AppColors.primary),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Ustad Rashid',
+                                      style: AppTypography.labelMedium.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      'Lead Brake Technician',
+                                      style: AppTypography.bodySmall.copyWith(color: Colors.white60),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  'Lead Brake Technician',
-                                  style: AppTypography.bodySmall.copyWith(color: Colors.white60),
-                                ),
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Text(
                           CurrencyUtils.formatPaisa(420000), // Rs 4,200.00
                           style: AppTypography.headlineSmall.copyWith(
@@ -212,13 +219,17 @@ class _ServiceTrackingViewState extends State<ServiceTrackingView> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  milestone['title'] as String,
-                                  style: AppTypography.labelLarge.copyWith(
-                                    fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
-                                    color: isFuture ? AppColors.outline : AppColors.onSurface,
+                                Expanded(
+                                  child: Text(
+                                    milestone['title'] as String,
+                                    style: AppTypography.labelLarge.copyWith(
+                                      fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
+                                      color: isFuture ? AppColors.outline : AppColors.onSurface,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
+                                const SizedBox(width: 8),
                                 Text(
                                   milestone['time'] as String,
                                   style: AppTypography.bodySmall.copyWith(

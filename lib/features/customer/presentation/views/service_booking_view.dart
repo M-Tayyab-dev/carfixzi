@@ -142,9 +142,12 @@ class _ServiceBookingViewState extends State<ServiceBookingView> {
                             children: [
                               Row(
                                 children: [
-                                  Text(
-                                    srv.title,
-                                    style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
+                                  Expanded(
+                                    child: Text(
+                                      srv.title,
+                                      style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   if (srv.isAutoConfirm)

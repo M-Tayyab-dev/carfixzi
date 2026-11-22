@@ -26,18 +26,39 @@ class AdminDashboardView extends StatelessWidget {
         title: Row(
           children: [
             Container(
+              width: 28,
+              height: 28,
+              decoration: const BoxDecoration(shape: BoxShape.circle),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 28,
+                  height: 28,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.admin_panel_settings, size: 18, color: AppColors.accentGold),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.primaryContainer,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'ADMIN PORTAL',
+                'ADMIN',
                 style: AppTypography.labelSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
               ),
             ),
-            const SizedBox(width: 12),
-            Text('Regional Operations · Sahiwal', style: AppTypography.headlineSmall),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Operations · Sahiwal',
+                style: AppTypography.headlineSmall,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         actions: [
@@ -55,16 +76,17 @@ class AdminDashboardView extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Pulse Bento Grid
-              Row(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isMobile = constraints.maxWidth < 650;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: _MetricCard(
+                  // Pulse Bento Grid (Adaptive)
+                  if (isMobile) ...[
+                    _MetricCard(
                       title: 'PENDING WORKSHOP AUDITS',
                       value: '03',
                       subtitle: 'CNIC & Tax docs uploaded',
@@ -72,10 +94,8 @@ class AdminDashboardView extends StatelessWidget {
                       icon: Icons.assignment_late_outlined,
                       onTap: () => Get.toNamed(AppRoutes.adminVerifications),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _MetricCard(
+                    const SizedBox(height: 12),
+                    _MetricCard(
                       title: 'PRICE REVISION PROPOSALS',
                       value: '05',
                       subtitle: 'Awaiting moderation',
@@ -83,10 +103,8 @@ class AdminDashboardView extends StatelessWidget {
                       icon: Icons.price_change_outlined,
                       onTap: () {},
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _MetricCard(
+                    const SizedBox(height: 12),
+                    _MetricCard(
                       title: 'ACTIVE APPROVED PARTNERS',
                       value: '18',
                       subtitle: 'Live in pilot city',
@@ -94,51 +112,122 @@ class AdminDashboardView extends StatelessWidget {
                       icon: Icons.verified_outlined,
                       onTap: () {},
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Form Builder Navigation Banner (Mandatory Section 4.2A)
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.primaryContainer.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.dynamic_form_rounded, size: 36, color: AppColors.primaryContainer),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Workshop Registration Form Builder',
-                            style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
+                  ] else ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _MetricCard(
+                            title: 'PENDING WORKSHOP AUDITS',
+                            value: '03',
+                            subtitle: 'CNIC & Tax docs uploaded',
+                            color: AppColors.error,
+                            icon: Icons.assignment_late_outlined,
+                            onTap: () => Get.toNamed(AppRoutes.adminVerifications),
                           ),
-                          Text(
-                            'Add custom onboarding questions, toggle Required/Optional on configurable fields, and publish new schema versions.',
-                            style: AppTypography.bodySmall,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _MetricCard(
+                            title: 'PRICE REVISION PROPOSALS',
+                            value: '05',
+                            subtitle: 'Awaiting moderation',
+                            color: AppColors.warning,
+                            icon: Icons.price_change_outlined,
+                            onTap: () {},
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryContainer,
-                        foregroundColor: Colors.white,
-                      ),
-                      icon: const Icon(Icons.edit_note_rounded, size: 20),
-                      label: const Text('Open Form Builder'),
-                      onPressed: () => Get.toNamed(AppRoutes.adminFormBuilder),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _MetricCard(
+                            title: 'ACTIVE APPROVED PARTNERS',
+                            value: '18',
+                            subtitle: 'Live in pilot city',
+                            color: AppColors.success,
+                            icon: Icons.verified_outlined,
+                            onTap: () {},
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ),
+                  const SizedBox(height: 24),
+
+                  // Form Builder Navigation Banner (Mandatory Section 4.2A)
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.primaryContainer.withOpacity(0.3)),
+                    ),
+                    child: isMobile
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.dynamic_form_rounded, size: 28, color: AppColors.primaryContainer),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'Workshop Form Builder',
+                                      style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Add custom onboarding questions, toggle Required/Optional on configurable fields, and publish new schema versions.',
+                                style: AppTypography.bodySmall,
+                              ),
+                              const SizedBox(height: 14),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primaryContainer,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  icon: const Icon(Icons.edit_note_rounded, size: 20),
+                                  label: const Text('Open Form Builder'),
+                                  onPressed: () => Get.toNamed(AppRoutes.adminFormBuilder),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              const Icon(Icons.dynamic_form_rounded, size: 36, color: AppColors.primaryContainer),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Workshop Registration Form Builder',
+                                      style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
+                                    ),
+                                    Text(
+                                      'Add custom onboarding questions, toggle Required/Optional on configurable fields, and publish new schema versions.',
+                                      style: AppTypography.bodySmall,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primaryContainer,
+                                  foregroundColor: Colors.white,
+                                ),
+                                icon: const Icon(Icons.edit_note_rounded, size: 20),
+                                label: const Text('Open Form Builder'),
+                                onPressed: () => Get.toNamed(AppRoutes.adminFormBuilder),
+                              ),
+                            ],
+                          ),
+                  ),
               const SizedBox(height: 28),
 
               // Pending Verification Queue Section
@@ -167,9 +256,11 @@ class AdminDashboardView extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
+        );
+      },
+    ),
+  ),
+);
   }
 }
 

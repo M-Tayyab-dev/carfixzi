@@ -224,16 +224,20 @@ class _ApplicationCard extends StatelessWidget {
           Text(app.workshopName, style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700)),
           Text('${app.ownerName} · ${app.address}', style: AppTypography.bodySmall),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
             children: [
               Text('Submitted: ${app.submittedDate}', style: AppTypography.bodySmall.copyWith(color: AppColors.outline, fontSize: 11)),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryContainer,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   minimumSize: const Size(0, 34),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 icon: const Icon(Icons.assignment_turned_in_rounded, size: 16),
                 label: const Text('Review Application'),

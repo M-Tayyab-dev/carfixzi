@@ -34,29 +34,36 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
   }
 
   void _onAnimationComplete() {
-    if (Get.isRegistered<AuthController>()) {
-      final auth = Get.find<AuthController>();
-      if (auth.isAuthenticated) {
-        if (!auth.isEmailVerified) {
-          Get.offAllNamed(AppRoutes.verifyEmail);
-        } else {
-          // Route based on role
-          final role = auth.user?.role;
-          if (role == null || role.isCustomer) {
-            Get.offAllNamed(AppRoutes.customerHome);
-          } else if (role.isWorkshop) {
-            Get.offAllNamed(AppRoutes.partnerDashboard);
-          } else if (role.isAdmin) {
-            Get.offAllNamed(AppRoutes.adminDashboard);
-          } else if (role.isSuperAdmin) {
-            Get.offAllNamed(AppRoutes.superAdminDashboard);
+    // Defer navigation to the next frame so the outgoing Scaffold is fully
+    // disposed before the incoming page builds, preventing hit-test /
+    // layout errors on widgets that haven't been laid out yet.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      if (Get.isRegistered<AuthController>()) {
+        final auth = Get.find<AuthController>();
+        if (auth.isAuthenticated) {
+          if (!auth.isEmailVerified) {
+            Get.offAllNamed(AppRoutes.verifyEmail);
+          } else {
+            // Route based on role
+            final role = auth.user?.role;
+            if (role == null || role.isCustomer) {
+              Get.offAllNamed(AppRoutes.customerHome);
+            } else if (role.isWorkshop) {
+              Get.offAllNamed(AppRoutes.partnerDashboard);
+            } else if (role.isAdmin) {
+              Get.offAllNamed(AppRoutes.adminDashboard);
+            } else if (role.isSuperAdmin) {
+              Get.offAllNamed(AppRoutes.superAdminDashboard);
+            }
           }
+          return;
         }
-        return;
       }
-    }
-    // Default: Show Onboarding
-    Get.offAllNamed(AppRoutes.onboarding);
+      // Default: Show Onboarding
+      Get.offAllNamed(AppRoutes.onboarding);
+    });
   }
 
   @override
@@ -111,11 +118,19 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
                       ),
                     ],
                   ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.directions_car_rounded,
-                      size: 56,
-                      color: AppColors.accentGold,
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 104,
+                      height: 104,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Center(
+                        child: Icon(
+                          Icons.directions_car_rounded,
+                          size: 56,
+                          color: AppColors.accentGold,
+                        ),
+                      ),
                     ),
                   ),
                 ),

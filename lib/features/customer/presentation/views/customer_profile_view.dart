@@ -113,9 +113,9 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
             const SizedBox(height: 10),
 
             _ProfileMenuItem(
-              icon: Icons.garage_rounded,
-              title: 'My Garage',
-              subtitle: 'Manage registered vehicles & mileage',
+              icon: Icons.directions_car_rounded,
+              title: 'My Vehicles',
+              subtitle: 'Manage your registered cars & motorcycles',
               onTap: () => Get.toNamed(AppRoutes.vehicleRegistration),
             ),
             const SizedBox(height: 8),

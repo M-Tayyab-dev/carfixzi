@@ -33,8 +33,7 @@ class CarfixziApp extends StatelessWidget {
       initialBinding: InitialBinding(),
       initialRoute: AppPages.initial,
       getPages: AppPages.routes,
-      defaultTransition: Transition.fade,
-      transitionDuration: const Duration(milliseconds: 200),
+      defaultTransition: Transition.noTransition,
     );
   }
 }

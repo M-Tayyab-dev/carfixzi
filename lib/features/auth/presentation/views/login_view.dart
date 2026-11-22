@@ -63,19 +63,34 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Brand Header Badge
+                // Brand Header Badge with Custom Logo
                 Center(
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    width: 90,
+                    height: 90,
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLowest,
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color.fromRGBO(45, 49, 66, 0.08)),
+                      border: Border.all(color: AppColors.accentGold, width: 2.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.18),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
-                    child: const Icon(
-                      Icons.directions_car_filled_rounded,
-                      size: 40,
-                      color: AppColors.primaryContainer,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.directions_car_filled_rounded,
+                          size: 40,
+                          color: AppColors.primaryContainer,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -94,35 +109,76 @@ class _LoginViewState extends State<LoginView> {
                     style: AppTypography.bodySmall,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
 
-                // Role Segmented Switcher (Customer vs Workshop Partner)
+                // Role Segmented Switcher (Customer, Workshop, Admin, Super Admin)
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: _RoleTab(
-                          label: 'Customer / Owner',
-                          isSelected: _selectedRole == UserRole.customer,
-                          onTap: () => setState(() => _selectedRole = UserRole.customer),
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _RoleTab(
+                              label: 'Customer / Owner',
+                              isSelected: _selectedRole == UserRole.customer,
+                              onTap: () {
+                                setState(() => _selectedRole = UserRole.customer);
+                                _emailController.clear();
+                                _passwordController.clear();
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: _RoleTab(
+                              label: 'Workshop Partner',
+                              isSelected: _selectedRole == UserRole.workshop,
+                              onTap: () {
+                                setState(() => _selectedRole = UserRole.workshop);
+                                _emailController.text = 'workshop@carfixzi.pk';
+                                _passwordController.text = 'Carfixzi@2026!';
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: _RoleTab(
-                          label: 'Workshop Partner',
-                          isSelected: _selectedRole == UserRole.workshop,
-                          onTap: () => setState(() => _selectedRole = UserRole.workshop),
-                        ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _RoleTab(
+                              label: 'Regional Admin',
+                              isSelected: _selectedRole == UserRole.admin,
+                              onTap: () {
+                                setState(() => _selectedRole = UserRole.admin);
+                                _emailController.text = 'admin@carfixzi.pk';
+                                _passwordController.text = 'Carfixzi@2026!';
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: _RoleTab(
+                              label: 'Super Admin',
+                              isSelected: _selectedRole == UserRole.super_admin,
+                              onTap: () {
+                                setState(() => _selectedRole = UserRole.super_admin);
+                                _emailController.text = 'superadmin@carfixzi.pk';
+                                _passwordController.text = 'Carfixzi@2026!';
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 18),
 
                 // Email Input
                 CarfixziTextField(
@@ -191,11 +247,11 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 24),
 
-                // Primary Ignite Session Button (Golden Yellow)
+                // Primary Login Button (Golden Yellow)
                 Obx(
                   () => CarfixziButton(
-                    text: 'Ignite Session',
-                    icon: Icons.flash_on_rounded,
+                    text: 'Log In',
+                    icon: Icons.login_rounded,
                     isLoading: authCtrl.isLoading.value,
                     onPressed: _handleLogin,
                   ),
@@ -286,6 +342,8 @@ class _RoleTab extends StatelessWidget {
         child: Center(
           child: Text(
             label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.labelMedium.copyWith(
               color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,

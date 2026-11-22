@@ -5,14 +5,18 @@ import '../../../../theme/app_typography.dart';
 import '../../../../shared/widgets/status_badge.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
+import 'workshop_locator_view.dart';
+import 'service_tracking_view.dart';
+import 'parts_marketplace_view.dart';
+import 'customer_profile_view.dart';
 
 /// D09: Customer Home Dashboard
-/// Direct representation of customer_home_dashboard mockup:
-/// - Header with welcome greeting & profile
-/// - 2 Large featured service cards (Repair Service & Car Wash)
-/// - "Book Now" CTA banner
-/// - Nearby Workshops horizontal scroll
-/// - FAB (+) and 5-Tab Bottom Navigation Bar
+/// Persistent 5-Tab Navigation Container hosting:
+/// 0: Home Dashboard
+/// 1: Workshop Discovery Map
+/// 2: Service Milestone Tracking
+/// 3: Spare Parts Marketplace
+/// 4: Customer Profile & Settings
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
 
@@ -22,25 +26,82 @@ class CustomerHomeView extends StatefulWidget {
 
 class _CustomerHomeViewState extends State<CustomerHomeView> {
   int _currentNavIndex = 0;
+  bool _isReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _isReady = true);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final authCtrl = Get.find<AuthController>();
     final user = authCtrl.user;
-    final userName = user?.displayName.isNotEmpty == true ? user!.displayName : 'Alex';
+    final userName = user?.displayName.isNotEmpty == true ? user!.displayName : 'Customer';
 
+    return Scaffold(
+      backgroundColor: AppColors.surface,
+      body: IndexedStack(
+        index: _currentNavIndex,
+        children: [
+          _buildDashboardTab(context, userName, authCtrl),
+          const WorkshopLocatorView(),
+          const ServiceTrackingView(),
+          const PartsMarketplaceView(),
+          const CustomerProfileView(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentNavIndex,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppColors.primaryContainer,
+        unselectedItemColor: AppColors.outline,
+        backgroundColor: AppColors.surface,
+        onTap: (index) {
+          setState(() => _currentNavIndex = index);
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.explore_rounded), label: 'Locate'),
+          BottomNavigationBarItem(icon: Icon(Icons.timelapse_rounded), label: 'Status'),
+          BottomNavigationBarItem(icon: Icon(Icons.build_circle_outlined), label: 'Parts'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline_rounded), label: 'Profile'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDashboardTab(BuildContext context, String userName, AuthController authCtrl) {
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
+              width: 32,
+              height: 32,
               decoration: const BoxDecoration(
-                color: AppColors.primary,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.directions_car_rounded, size: 20, color: AppColors.accentGold),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.directions_car_rounded, size: 18, color: AppColors.accentGold),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 10),
             Text('CARFIXZI', style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w800)),
@@ -103,7 +164,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       subtitle: 'Engine & Mechanical',
                       icon: Icons.car_repair_rounded,
                       color: AppColors.primaryContainer,
-                      onTap: () => Get.toNamed(AppRoutes.workshopLocator),
+                      onTap: () => setState(() => _currentNavIndex = 1),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -139,7 +200,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       subtitle: 'Buy Workshop Parts',
                       icon: Icons.shopping_bag_outlined,
                       color: AppColors.darkSlate,
-                      onTap: () => Get.toNamed(AppRoutes.partsMarketplace),
+                      onTap: () => setState(() => _currentNavIndex = 3),
                     ),
                   ),
                 ],
@@ -183,9 +244,10 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.accentGold,
                         foregroundColor: AppColors.darkSlate,
+                        minimumSize: Size.zero,
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       ),
-                      onPressed: () => Get.toNamed(AppRoutes.workshopLocator),
+                      onPressed: () => setState(() => _currentNavIndex = 1),
                       child: Text(
                         'Book Now',
                         style: AppTypography.labelMedium.copyWith(fontWeight: FontWeight.w700),
@@ -200,12 +262,15 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Nearby Verified Workshops',
-                    style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
+                  Expanded(
+                    child: Text(
+                      'Nearby Verified Workshops',
+                      style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   TextButton(
-                    onPressed: () => Get.toNamed(AppRoutes.workshopLocator),
+                    onPressed: () => setState(() => _currentNavIndex = 1),
                     child: Text(
                       'View Map',
                       style: AppTypography.labelMedium.copyWith(
@@ -230,7 +295,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       rating: '4.9',
                       distance: '1.2 km',
                       isOpen: true,
-                      onTap: () => Get.toNamed(AppRoutes.workshopLocator),
+                      onTap: () => setState(() => _currentNavIndex = 1),
                     ),
                     const SizedBox(width: 12),
                     _WorkshopCard(
@@ -239,7 +304,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       rating: '4.8',
                       distance: '2.4 km',
                       isOpen: true,
-                      onTap: () => Get.toNamed(AppRoutes.workshopLocator),
+                      onTap: () => setState(() => _currentNavIndex = 1),
                     ),
                     const SizedBox(width: 12),
                     _WorkshopCard(
@@ -248,7 +313,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       rating: '4.7',
                       distance: '3.1 km',
                       isOpen: false,
-                      onTap: () => Get.toNamed(AppRoutes.workshopLocator),
+                      onTap: () => setState(() => _currentNavIndex = 1),
                     ),
                   ],
                 ),
@@ -257,32 +322,16 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
           ),
         ),
       ),
-      // FAB for quick booking / AI
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.accentGold,
-        foregroundColor: AppColors.darkSlate,
-        onPressed: () => Get.toNamed(AppRoutes.customerAiAssistant),
-        tooltip: 'AI Assistant',
-        child: const Icon(Icons.chat_bubble_outline_rounded),
-      ),
-      // 5-Tab Bottom Navigation Bar (Matching Mockup)
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentNavIndex,
-        onTap: (index) {
-          setState(() => _currentNavIndex = index);
-          if (index == 1) Get.toNamed(AppRoutes.workshopLocator);
-          if (index == 2) Get.toNamed(AppRoutes.serviceTracking);
-          if (index == 3) Get.toNamed(AppRoutes.partsMarketplace);
-          if (index == 4) Get.toNamed(AppRoutes.customerProfile);
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore_rounded), label: 'Locate'),
-          BottomNavigationBarItem(icon: Icon(Icons.timelapse_rounded), label: 'Status'),
-          BottomNavigationBarItem(icon: Icon(Icons.build_circle_outlined), label: 'Parts'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline_rounded), label: 'Profile'),
-        ],
-      ),
+      floatingActionButton: _isReady
+          ? FloatingActionButton(
+              backgroundColor: AppColors.accentGold,
+              foregroundColor: AppColors.darkSlate,
+              onPressed: () => Get.toNamed(AppRoutes.customerAiAssistant),
+              tooltip: 'AI Assistant',
+              child: const Icon(Icons.chat_bubble_outline_rounded),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
@@ -331,10 +380,14 @@ class _ServiceFeatureCard extends StatelessWidget {
                 Text(
                   title,
                   style: AppTypography.labelLarge.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   subtitle,
                   style: AppTypography.bodySmall.copyWith(color: Colors.white70),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

@@ -50,6 +50,10 @@ app.*.map.json
 # Environment Secrets & Python
 .env
 *.env
+lib/core/constants/app_secrets.dart
 __pycache__/
 *.pyc
 venv/
+android/build/
+build_log.txt
+gradle_diagnostic.txt

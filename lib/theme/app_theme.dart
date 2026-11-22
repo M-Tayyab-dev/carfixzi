@@ -109,7 +109,7 @@ class AppTheme {
           backgroundColor: AppColors.accentGold,
           foregroundColor: AppColors.darkSlate,
           elevation: 0,
-          minimumSize: const Size(double.infinity, 48),
+          minimumSize: const Size(64, 40),
           textStyle: AppTypography.labelLarge.copyWith(
             fontWeight: FontWeight.w700,
             color: AppColors.darkSlate,
@@ -125,7 +125,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          minimumSize: const Size(double.infinity, 48),
+          minimumSize: const Size(64, 40),
           side: const BorderSide(color: AppColors.primary, width: 1.5),
           textStyle: AppTypography.labelLarge.copyWith(
             fontWeight: FontWeight.w600,
