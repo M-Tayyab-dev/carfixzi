@@ -6,6 +6,7 @@ from app.api.workshop_form import router as form_router
 from app.api.bookings import router as bookings_router
 from app.api.settlements import router as settlements_router
 from app.api.media import router as media_router
+from app.api.email import router as email_router
 
 app = FastAPI(
     title="CARFIXZI Trusted Backend API",
@@ -32,6 +33,7 @@ app.include_router(form_router)
 app.include_router(bookings_router)
 app.include_router(settlements_router)
 app.include_router(media_router)
+app.include_router(email_router)
 
 @app.get("/", tags=["Health"])
 async def root():
