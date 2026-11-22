@@ -7,6 +7,7 @@ import '../../../../core/enums/payment_status.dart';
 import '../../../../shared/widgets/carfixzi_card.dart';
 import '../../../../shared/widgets/carfixzi_button.dart';
 import '../../../../shared/widgets/status_badge.dart';
+import '../../../../shared/widgets/carfixzi_receipt_dialog.dart';
 import '../../../../app/routes/app_routes.dart';
 
 /// D15: Payment Checkout & Receipt Screen
@@ -33,53 +34,28 @@ class _PaymentCheckoutViewState extends State<PaymentCheckoutView> {
   void _handleCompletePayment() {
     setState(() => _isProcessing = true);
 
-    Future.delayed(const Duration(milliseconds: 1200), () {
+    Future.delayed(const Duration(milliseconds: 1000), () {
       setState(() => _isProcessing = false);
 
-      Get.defaultDialog(
-        title: 'Payment Receipt Issued',
-        titleStyle: AppTypography.headlineSmall.copyWith(
-          color: AppColors.success,
-          fontWeight: FontWeight.w700,
-        ),
-        contentPadding: const EdgeInsets.all(20),
-        content: Column(
-          children: [
-            const Icon(Icons.check_circle_rounded, size: 48, color: AppColors.success),
-            const SizedBox(height: 12),
-            Text(
-              'Receipt #REC-2026-99',
-              style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Total Settled: ${CurrencyUtils.formatPaisa(_totalPaisa)}',
-              style: AppTypography.headlineSmall.copyWith(
-                color: AppColors.primaryContainer,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _selectedMethod == PaymentStatus.cash_declared
-                  ? 'Payment recorded as CASH ON SERVICE physically received by partner.'
-                  : 'DEMO MODE: Simulated transaction recorded for evaluation purposes only.',
-              textAlign: TextAlign.center,
-              style: AppTypography.bodySmall,
-            ),
-          ],
-        ),
-        confirm: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.accentGold,
-            foregroundColor: AppColors.darkSlate,
-          ),
-          onPressed: () {
-            Get.back();
-            Get.offAllNamed(AppRoutes.customerHome);
-          },
-          child: const Text('Back to Home'),
-        ),
+      CarfixziReceiptDialog.show(
+        context: context,
+        receiptNumber: 'REC-2026-99',
+        title: 'Brake Pad Replacement & Bleed',
+        partyName: 'Apex GT Motorwerks',
+        partyRole: 'Service Center',
+        vehicleOrMeta: 'Sahiwal Bay 01',
+        date: 'Today, Just Now',
+        totalPaisa: _totalPaisa,
+        paymentMethod: _selectedMethod == PaymentStatus.cash_declared
+            ? 'Cash on Service (Physical Delivery)'
+            : 'Demo Simulated Payment',
+        status: 'Settled',
+        items: [
+          ReceiptItem(label: 'Mechanical Labor', amount: CurrencyUtils.formatPaisa(_laborPaisa)),
+          ReceiptItem(label: 'Ceramic Brake Pad Set', amount: CurrencyUtils.formatPaisa(_partsPaisa)),
+          ReceiptItem(label: 'Provincial Sales Tax (Exempt Pilot)', amount: 'Rs 0.00'),
+          ReceiptItem(label: 'Total Settled', amount: CurrencyUtils.formatPaisa(_totalPaisa)),
+        ],
       );
     });
   }

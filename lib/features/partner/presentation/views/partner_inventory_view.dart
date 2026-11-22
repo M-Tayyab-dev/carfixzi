@@ -82,7 +82,7 @@ class _PartnerInventoryViewState extends State<PartnerInventoryView> {
         foregroundColor: AppColors.darkSlate,
         icon: const Icon(Icons.add_rounded),
         label: Text(
-          'Add SKU',
+          'Add Part',
           style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
@@ -96,7 +96,7 @@ class _PartnerInventoryViewState extends State<PartnerInventoryView> {
               child: Row(
                 children: [
                   _StatChip(
-                    label: 'Total SKUs',
+                    label: 'Total Parts',
                     value: '${_inventory.length}',
                     color: AppColors.primaryContainer,
                   ),
@@ -222,7 +222,7 @@ class _PartnerInventoryViewState extends State<PartnerInventoryView> {
     String selectedCategory = 'Braking';
 
     Get.defaultDialog(
-      title: 'Add New Part SKU',
+      title: 'Add New Part',
       titleStyle: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
       contentPadding: const EdgeInsets.all(20),
       content: StatefulBuilder(
@@ -232,7 +232,7 @@ class _PartnerInventoryViewState extends State<PartnerInventoryView> {
             TextField(
               controller: skuCtrl,
               decoration: InputDecoration(
-                labelText: 'SKU Code',
+                labelText: 'Part Code',
                 hintText: 'e.g. BRK-DISC-001',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               ),
@@ -304,7 +304,7 @@ class _PartnerInventoryViewState extends State<PartnerInventoryView> {
           if (sku.isEmpty || title.isEmpty || price <= 0) {
             Get.snackbar(
               'Validation Error',
-              'Please fill SKU, Part Name and a valid Price.',
+              'Please fill Part Code, Part Name and a valid Price.',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: AppColors.errorContainer,
               colorText: AppColors.error,

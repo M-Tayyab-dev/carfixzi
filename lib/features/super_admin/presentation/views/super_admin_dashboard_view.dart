@@ -55,7 +55,7 @@ class SuperAdminDashboardView extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Root Console',
+                'Admin Panel',
                 style: AppTypography.headlineSmall,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -200,7 +200,7 @@ class SuperAdminDashboardView extends StatelessWidget {
 
                   // Super Admin Exclusive Controls Grid (Adaptive)
                   Text(
-                    'Governance & Root Privileges',
+                    'Governance & Admin Privileges',
                     style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 12),
@@ -326,6 +326,7 @@ class _GovernanceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CarfixziCard(
+      onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

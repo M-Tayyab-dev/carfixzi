@@ -140,8 +140,8 @@ class _LoginViewState extends State<LoginView> {
                               isSelected: _selectedRole == UserRole.workshop,
                               onTap: () {
                                 setState(() => _selectedRole = UserRole.workshop);
-                                _emailController.text = 'workshop@carfixzi.pk';
-                                _passwordController.text = 'Carfixzi@2026!';
+                                _emailController.clear();
+                                _passwordController.clear();
                               },
                             ),
                           ),
@@ -156,8 +156,8 @@ class _LoginViewState extends State<LoginView> {
                               isSelected: _selectedRole == UserRole.admin,
                               onTap: () {
                                 setState(() => _selectedRole = UserRole.admin);
-                                _emailController.text = 'admin@carfixzi.pk';
-                                _passwordController.text = 'Carfixzi@2026!';
+                                _emailController.clear();
+                                _passwordController.clear();
                               },
                             ),
                           ),
@@ -168,8 +168,8 @@ class _LoginViewState extends State<LoginView> {
                               isSelected: _selectedRole == UserRole.super_admin,
                               onTap: () {
                                 setState(() => _selectedRole = UserRole.super_admin);
-                                _emailController.text = 'superadmin@carfixzi.pk';
-                                _passwordController.text = 'Carfixzi@2026!';
+                                _emailController.clear();
+                                _passwordController.clear();
                               },
                             ),
                           ),

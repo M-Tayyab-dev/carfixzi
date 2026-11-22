@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_typography.dart';
+import '../../../../app/routes/app_routes.dart';
 import '../../domain/entities/chat_message.dart';
 import '../controllers/ai_chat_controller.dart';
 import '../../../auth/domain/contracts/auth_repository.dart';
@@ -88,6 +89,54 @@ class _AiAssistantViewState extends State<AiAssistantView> {
       body: SafeArea(
         child: Column(
           children: [
+            // Quick Booking Action Shortcuts Bar
+            Container(
+              height: 44,
+              color: AppColors.surfaceContainerLowest,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                children: [
+                  _QuickActionPill(
+                    icon: Icons.calendar_month_rounded,
+                    label: 'Book Service',
+                    color: AppColors.primaryContainer,
+                    onTap: () => Get.toNamed(AppRoutes.serviceBooking),
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickActionPill(
+                    icon: Icons.local_car_wash_rounded,
+                    label: 'Doorstep Wash',
+                    color: AppColors.accentGold,
+                    textColor: AppColors.darkSlate,
+                    onTap: () => Get.toNamed(AppRoutes.carWashBooking),
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickActionPill(
+                    icon: Icons.emergency_rounded,
+                    label: 'Roadside Mechanic',
+                    color: AppColors.error,
+                    onTap: () => Get.toNamed(AppRoutes.mobileMechanic),
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickActionPill(
+                    icon: Icons.storefront_rounded,
+                    label: 'Sahiwal Workshops',
+                    color: AppColors.primary,
+                    onTap: () => Get.toNamed(AppRoutes.workshopLocator),
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickActionPill(
+                    icon: Icons.shopping_bag_outlined,
+                    label: 'Parts Shop',
+                    color: AppColors.primaryContainer,
+                    onTap: () => Get.toNamed(AppRoutes.partsMarketplace),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, thickness: 1),
+
             // Messages List
             Expanded(
               child: Obx(() {
@@ -164,6 +213,53 @@ class _AiAssistantViewState extends State<AiAssistantView> {
                     onPressed: _onSend,
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final Color? textColor;
+  final VoidCallback onTap;
+
+  const _QuickActionPill({
+    required this.icon,
+    required this.label,
+    required this.color,
+    this.textColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: AppTypography.labelSmall.copyWith(
+                color: textColor ?? color,
+                fontWeight: FontWeight.w700,
+                fontSize: 11,
               ),
             ),
           ],
@@ -264,4 +360,5 @@ class _ChatBubble extends StatelessWidget {
     );
   }
 }
+
 

@@ -29,9 +29,10 @@ class AiChatController extends GetxController {
         isUser: false,
         timestamp: DateTime.now(),
         suggestedActions: const [
-          SuggestedAction(label: 'Find Sahiwal Workshops', route: '/customer/workshops'),
-          SuggestedAction(label: 'How Cash Payment Works', route: '/faq/cash-policy'),
-          SuggestedAction(label: 'Mobile Wash Coverage', route: '/customer/wash-booking'),
+          SuggestedAction(label: '📅 Book a Service Now', route: '/customer/booking'),
+          SuggestedAction(label: '📍 Sahiwal Certified Workshops', route: '/customer/workshops'),
+          SuggestedAction(label: '🧼 Doorstep Car Wash (Rs 800)', route: '/customer/wash-booking'),
+          SuggestedAction(label: '🚨 Emergency Roadside Mechanic', route: '/customer/mobile-mechanic'),
         ],
       ),
     );
@@ -50,6 +51,22 @@ class AiChatController extends GetxController {
     isLoading.value = true;
     errorBanner.value = '';
 
+    // Dynamically build smart actions based on user intent
+    final lower = text.toLowerCase();
+    final List<SuggestedAction> actions = [];
+    if (lower.contains('wash') || lower.contains('clean') || lower.contains('detail')) {
+      actions.add(const SuggestedAction(label: '🧼 Book Mobile Wash (Rs 800)', route: '/customer/wash-booking'));
+    }
+    if (lower.contains('emergency') || lower.contains('stuck') || lower.contains('puncture') || lower.contains('battery')) {
+      actions.add(const SuggestedAction(label: '🚨 Call Emergency Mechanic', route: '/customer/mobile-mechanic'));
+    }
+    if (lower.contains('part') || lower.contains('filter') || lower.contains('pad') || lower.contains('oil') || lower.contains('price')) {
+      actions.add(const SuggestedAction(label: '🛒 Browse Parts Catalog', route: '/customer/parts'));
+    }
+    // Always provide direct booking action
+    actions.add(const SuggestedAction(label: '📅 Confirm & Book Service', route: '/customer/booking'));
+    actions.add(const SuggestedAction(label: '📍 Select Workshop in Sahiwal', route: '/customer/workshops'));
+
     // 1. First attempt direct Groq Cloud API
     try {
       final groqResponse = await _queryGroq(text.trim());
@@ -66,6 +83,7 @@ class AiChatController extends GetxController {
                 type: 'ai_groq',
               ),
             ],
+            suggestedActions: actions,
           ),
         );
         isLoading.value = false;
@@ -145,12 +163,15 @@ class AiChatController extends GetxController {
                 'content':
                     'You are CARFIXZI AI Assistant, the official intelligent automotive specialist for the CARFIXZI platform in Sahiwal, Pakistan. '
                     'You provide clear, accurate, concise, and helpful guidance for car and bike owners regarding: '
-                    '1. Certified workshop repairs and diagnostics in Sahiwal. '
-                    '2. Doorstep mobile car and bike wash procedures. '
-                    '3. Emergency roadside mobile mechanic services. '
-                    '4. Genuine auto parts marketplace pricing in PKR. '
+                    '1. Certified workshop repairs and diagnostics in Sahiwal (Apex GT Motorwerks, Royal Auto Detailing Hub, PakWheels Express Bay). '
+                    '2. Doorstep mobile car and bike wash procedures and pricing (starting from Rs 800). '
+                    '3. Emergency roadside mobile mechanic services (battery jumpstart Rs 1,200, tyre change Rs 1,500). '
+                    '4. Genuine auto parts marketplace pricing in PKR (brake pads Rs 2,400-5,500, oil filters Rs 350-800, air filters Rs 450-1,200). '
                     '5. Transparent cash-on-delivery settlement policy (pay after service inspection). '
-                    'Be polite, friendly, and practical. Use formatting with bullet points where appropriate.',
+                    '6. Service booking guidance - help customers choose the right service and workshop. '
+                    '7. Vehicle troubleshooting - diagnose common issues and recommend appropriate services. '
+                    'When users ask about booking a service, provide workshop options with estimated pricing and ask if they want to proceed. '
+                    'Be polite, friendly, and practical. Use formatting with bullet points where appropriate. Always mention prices in PKR.',
               },
               {
                 'role': 'user',

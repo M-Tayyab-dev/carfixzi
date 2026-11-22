@@ -4,12 +4,14 @@ import '../../../../theme/app_typography.dart';
 import '../../../../core/utils/currency_utils.dart';
 import '../../../../shared/widgets/carfixzi_card.dart';
 import '../../../../shared/widgets/status_badge.dart';
+import '../../../../shared/widgets/carfixzi_receipt_dialog.dart';
 
 /// D22: Partner Billing & Commission Ledger
 /// Shows:
 /// - Cash collected summary (today / month)
 /// - Platform commission liability breakdown (services @ 10%, parts @ 5%)
 /// - Settlement history with admin-verified payment dates
+/// - All receipts open on tap and can be saved to phone storage with CARFIXZI logo!
 class PartnerBillingView extends StatelessWidget {
   const PartnerBillingView({super.key});
 
@@ -22,6 +24,60 @@ class PartnerBillingView extends StatelessWidget {
   // Simulated revenue breakdown
   static const int _monthServiceRevenuePaisa = 24200000;
   static const int _monthPartsRevenuePaisa = 8540000;
+
+  void _openMonthlyReceipt(BuildContext context, int netRetained, int totalComm) {
+    CarfixziReceiptDialog.show(
+      context: context,
+      receiptNumber: 'STM-NOV-2026',
+      title: 'Monthly Partner Billing Statement',
+      partyName: 'Apex GT Motorwerks',
+      partyRole: 'Workshop Partner',
+      vehicleOrMeta: 'Billing Cycle: Nov 2026',
+      date: 'November 2026 (Live)',
+      totalPaisa: _monthCashPaisa,
+      paymentMethod: 'Cash on Service Collections',
+      status: 'Active Pilot',
+      items: [
+        ReceiptItem(label: 'Total Service Revenue (10%)', amount: CurrencyUtils.formatPaisa(_monthServiceRevenuePaisa)),
+        ReceiptItem(label: 'Service Commission Due', amount: CurrencyUtils.formatPaisa(CurrencyUtils.calculateCommission(_monthServiceRevenuePaisa, _serviceCommBps))),
+        ReceiptItem(label: 'Total Parts Revenue (5%)', amount: CurrencyUtils.formatPaisa(_monthPartsRevenuePaisa)),
+        ReceiptItem(label: 'Parts Commission Due', amount: CurrencyUtils.formatPaisa(CurrencyUtils.calculateCommission(_monthPartsRevenuePaisa, _partsCommBps))),
+        ReceiptItem(label: 'Total Commission Payable', amount: CurrencyUtils.formatPaisa(totalComm)),
+        ReceiptItem(label: 'Partner Net Retained Earnings', amount: CurrencyUtils.formatPaisa(netRetained)),
+      ],
+    );
+  }
+
+  void _openSettlementReceipt({
+    required BuildContext context,
+    required String period,
+    required int totalCommission,
+    required String paidDate,
+    required String status,
+  }) {
+    final grossEstimated = totalCommission * 10;
+    final retainedEstimated = grossEstimated - totalCommission;
+
+    CarfixziReceiptDialog.show(
+      context: context,
+      receiptNumber: 'REC-STL-${period.replaceAll(' ', '-').toUpperCase()}',
+      title: 'Settled Commission Receipt',
+      partyName: 'Apex GT Motorwerks',
+      partyRole: 'Workshop Partner',
+      vehicleOrMeta: 'Settlement Period: $period',
+      date: paidDate,
+      totalPaisa: totalCommission,
+      paymentMethod: 'Bank Transfer / Admin Settled',
+      status: status,
+      items: [
+        ReceiptItem(label: 'Gross Cash Collected', amount: CurrencyUtils.formatPaisa(grossEstimated)),
+        ReceiptItem(label: 'Platform Commission (10%)', amount: CurrencyUtils.formatPaisa(totalCommission)),
+        ReceiptItem(label: 'Workshop Retained Share (90%)', amount: CurrencyUtils.formatPaisa(retainedEstimated)),
+        ReceiptItem(label: 'Payment Method', amount: 'Direct Bank Settlement'),
+        ReceiptItem(label: 'Verification Status', amount: 'Verified by Platform Super Admin'),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,72 +100,91 @@ class PartnerBillingView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Revenue Overview Hero Card
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'MONTHLY CASH COLLECTED',
-                          style: AppTypography.labelSmall.copyWith(
-                            color: Colors.white70,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                        const StatusBadge(
-                          label: 'NOV 2026',
-                          variant: StatusBadgeVariant.accent,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      CurrencyUtils.formatPaisa(_monthCashPaisa),
-                      style: AppTypography.displayLarge.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
+              // Revenue Overview Hero Card (Clickable to open receipt!)
+              InkWell(
+                onTap: () => _openMonthlyReceipt(context, netRetained, totalComm),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Today: ${CurrencyUtils.formatPaisa(_todayCashPaisa)}',
-                      style: AppTypography.bodySmall.copyWith(color: Colors.white60),
-                    ),
-                    const SizedBox(height: 12),
-                    const Divider(color: Colors.white24),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Net Retained (after commission):',
-                          style: AppTypography.bodySmall.copyWith(color: Colors.white70),
-                        ),
-                        Text(
-                          CurrencyUtils.formatPaisa(netRetained),
-                          style: AppTypography.labelLarge.copyWith(
-                            color: AppColors.accentGold,
-                            fontWeight: FontWeight.w700,
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'MONTHLY CASH COLLECTED',
+                            style: AppTypography.labelSmall.copyWith(
+                              color: Colors.white70,
+                              letterSpacing: 1.2,
+                            ),
                           ),
+                          Row(
+                            children: [
+                              const StatusBadge(
+                                label: 'NOV 2026',
+                                variant: StatusBadgeVariant.accent,
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(Icons.receipt_long_rounded, color: Colors.white70, size: 18),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        CurrencyUtils.formatPaisa(_monthCashPaisa),
+                        style: AppTypography.displayLarge.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Today: ${CurrencyUtils.formatPaisa(_todayCashPaisa)}',
+                            style: AppTypography.bodySmall.copyWith(color: Colors.white60),
+                          ),
+                          Text(
+                            'Tap to view statement ➜',
+                            style: AppTypography.bodySmall.copyWith(color: AppColors.accentGold, fontSize: 11),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      const Divider(color: Colors.white24),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Net Retained (after commission):',
+                            style: AppTypography.bodySmall.copyWith(color: Colors.white70),
+                          ),
+                          Text(
+                            CurrencyUtils.formatPaisa(netRetained),
+                            style: AppTypography.labelLarge.copyWith(
+                              color: AppColors.accentGold,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -165,8 +240,8 @@ class PartnerBillingView extends StatelessWidget {
                     style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
                   ),
                   Text(
-                    'Last 3 cycles',
-                    style: AppTypography.bodySmall.copyWith(color: AppColors.outline),
+                    'Tap receipt to view & save',
+                    style: AppTypography.bodySmall.copyWith(color: AppColors.primaryContainer, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -178,6 +253,13 @@ class PartnerBillingView extends StatelessWidget {
                 paidDate: '03 Nov 2026',
                 status: 'Settled',
                 isSettled: true,
+                onTap: () => _openSettlementReceipt(
+                  context: context,
+                  period: 'October 2026',
+                  totalCommission: 2890000,
+                  paidDate: '03 Nov 2026',
+                  status: 'Settled',
+                ),
               ),
               const SizedBox(height: 10),
               _SettlementCard(
@@ -186,6 +268,13 @@ class PartnerBillingView extends StatelessWidget {
                 paidDate: '05 Oct 2026',
                 status: 'Settled',
                 isSettled: true,
+                onTap: () => _openSettlementReceipt(
+                  context: context,
+                  period: 'September 2026',
+                  totalCommission: 3125000,
+                  paidDate: '05 Oct 2026',
+                  status: 'Settled',
+                ),
               ),
               const SizedBox(height: 10),
               _SettlementCard(
@@ -194,6 +283,13 @@ class PartnerBillingView extends StatelessWidget {
                 paidDate: '04 Sep 2026',
                 status: 'Settled',
                 isSettled: true,
+                onTap: () => _openSettlementReceipt(
+                  context: context,
+                  period: 'August 2026',
+                  totalCommission: 2540000,
+                  paidDate: '04 Sep 2026',
+                  status: 'Settled',
+                ),
               ),
               const SizedBox(height: 20),
             ],
@@ -263,6 +359,7 @@ class _SettlementCard extends StatelessWidget {
   final String paidDate;
   final String status;
   final bool isSettled;
+  final VoidCallback onTap;
 
   const _SettlementCard({
     required this.period,
@@ -270,11 +367,13 @@ class _SettlementCard extends StatelessWidget {
     required this.paidDate,
     required this.status,
     required this.isSettled,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return CarfixziCard(
+      onTap: onTap,
       child: Row(
         children: [
           Container(
@@ -295,9 +394,15 @@ class _SettlementCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  period,
-                  style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
+                Row(
+                  children: [
+                    Text(
+                      period,
+                      style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(Icons.receipt_outlined, size: 14, color: AppColors.primaryContainer),
+                  ],
                 ),
                 Text(
                   'Paid: $paidDate',

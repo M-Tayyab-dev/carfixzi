@@ -5,6 +5,7 @@ import '../../../../theme/app_typography.dart';
 import '../../../../core/utils/currency_utils.dart';
 import '../../../../shared/widgets/carfixzi_card.dart';
 import '../../../../shared/widgets/status_badge.dart';
+import '../../../../shared/widgets/carfixzi_receipt_dialog.dart';
 
 /// NEW-14: Super Admin Manual Settlement Recording
 /// Records audited manual cash settlements against partner commission liabilities.
@@ -389,6 +390,27 @@ class _SettlementRecordCard extends StatelessWidget {
     final isDisputed = record.status == 'Disputed';
 
     return CarfixziCard(
+      onTap: () {
+        CarfixziReceiptDialog.show(
+          context: context,
+          receiptNumber: 'STL-${record.id.toUpperCase()}',
+          title: 'Partner Commission Settlement Audit',
+          partyName: record.partnerName,
+          partyRole: 'Workshop Partner',
+          vehicleOrMeta: 'Cycle: ${record.period}',
+          date: record.settledDate ?? 'Pending',
+          totalPaisa: record.amountPaisa,
+          paymentMethod: record.method,
+          status: record.status,
+          items: [
+            ReceiptItem(label: 'Partner Name', amount: record.partnerName),
+            ReceiptItem(label: 'Settlement Period', amount: record.period),
+            ReceiptItem(label: 'Audited Commission Amount', amount: CurrencyUtils.formatPaisa(record.amountPaisa)),
+            ReceiptItem(label: 'Settlement Channel', amount: record.method),
+            ReceiptItem(label: 'Audit Status', amount: record.status),
+          ],
+        );
+      },
       border: isOutstanding
           ? Border.all(color: AppColors.error.withOpacity(0.3), width: 1.5)
           : null,

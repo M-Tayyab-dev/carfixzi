@@ -5,6 +5,7 @@ import '../../../../theme/app_typography.dart';
 import '../../../../core/utils/currency_utils.dart';
 import '../../../../shared/widgets/carfixzi_card.dart';
 import '../../../../shared/widgets/status_badge.dart';
+import '../../../../shared/widgets/carfixzi_receipt_dialog.dart';
 
 /// D16: Service History & Receipts (Customer Android)
 class ServiceHistoryView extends StatefulWidget {
@@ -81,55 +82,23 @@ class _ServiceHistoryViewState extends State<ServiceHistoryView> {
   }
 
   void _showReceiptModal(_HistoryItem item) {
-    Get.defaultDialog(
-      title: 'Digital Receipt',
-      titleStyle: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
-      contentPadding: const EdgeInsets.all(20),
-      content: Column(
-        children: [
-          const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 44),
-          const SizedBox(height: 8),
-          Text(
-            item.receiptNumber,
-            style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
-          ),
-          Text(item.date, style: AppTypography.bodySmall.copyWith(color: AppColors.outline)),
-          const SizedBox(height: 14),
-          const Divider(),
-          const SizedBox(height: 8),
-          _ReceiptLine(label: 'Workshop', value: item.workshopName),
-          const SizedBox(height: 6),
-          _ReceiptLine(label: 'Service', value: item.serviceTitle),
-          const SizedBox(height: 6),
-          _ReceiptLine(label: 'Vehicle Plate', value: item.vehiclePlate),
-          const SizedBox(height: 6),
-          _ReceiptLine(label: 'Payment Method', value: item.paymentMethod),
-          const SizedBox(height: 10),
-          const Divider(),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Total Paid:', style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700)),
-              Text(
-                CurrencyUtils.formatPaisa(item.totalPaisa),
-                style: AppTypography.headlineSmall.copyWith(
-                  color: AppColors.primaryContainer,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      confirm: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryContainer,
-          foregroundColor: Colors.white,
-        ),
-        onPressed: () => Get.back(),
-        child: const Text('Close'),
-      ),
+    CarfixziReceiptDialog.show(
+      context: context,
+      receiptNumber: item.receiptNumber,
+      title: item.serviceTitle,
+      partyName: item.workshopName,
+      partyRole: 'Workshop',
+      vehicleOrMeta: item.vehiclePlate,
+      date: item.date,
+      totalPaisa: item.totalPaisa,
+      paymentMethod: item.paymentMethod,
+      status: item.status,
+      items: [
+        ReceiptItem(label: 'Service & Labor', amount: CurrencyUtils.formatPaisa((item.totalPaisa * 0.6).round())),
+        ReceiptItem(label: 'Parts & Consumables', amount: CurrencyUtils.formatPaisa((item.totalPaisa * 0.4).round())),
+        ReceiptItem(label: 'Punjab Sales Tax', amount: 'Exempt (Pilot)'),
+        ReceiptItem(label: 'Total Paid', amount: CurrencyUtils.formatPaisa(item.totalPaisa)),
+      ],
     );
   }
 
