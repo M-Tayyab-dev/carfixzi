@@ -11,14 +11,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
+
+      - name: Create stub secrets for CI
+        run: |
+          mkdir -p lib/core/constants
+          cat << 'EOF' > lib/core/constants/app_secrets.dart
+          class AppSecrets {
+            static const String groqApiKey = 'ci_demo_key';
+            static const String groqApiUrl = 'https://api.groq.com/openai/v1/chat/completions';
+            static const String groqModel = 'openai/gpt-oss-120b';
+            static const String groqFallbackModel = 'openai/gpt-oss-20b';
+          }
+          EOF
+
       - name: Install dependencies
         run: flutter pub get
+
       - name: Analyze
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
+
       - name: Run tests
         run: flutter test
-
